@@ -40,7 +40,7 @@ object Graph {
     * @return
     */
   def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = {
-  ???
+    ???
   }
 
   /**
@@ -65,7 +65,7 @@ object Graph {
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
     assert(treeDepth <= colorMap.size, s"Treedepth higher than color mappings - bailing out ...")
     ???
- }
+  }
 
 }
 
@@ -78,18 +78,11 @@ object MathUtil {
     * @return
     */
   def round(value: Double): Double = {
-    ???
+    // http://stackoverflow.com/a/11107005
+    BigDecimal(value).setScale(3, BigDecimal.RoundingMode.HALF_UP).toDouble
   }
 
-  /**
-    * turns an angle given in degrees to a value in radiants.
-    *
-    * @param angle
-    * @return
-    */
-  def toRadiants(angle: AngleInDegrees): AngleInRadiants = {
-   ???
-  }
+
 }
 
 

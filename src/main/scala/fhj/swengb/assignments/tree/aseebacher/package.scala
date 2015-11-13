@@ -7,7 +7,7 @@ package fhj.swengb.assignments.tree
 package object aseebacher {
 
   type AngleInDegrees = Double
-  type AngleInRadiants = Double
+  type AngleInRadians = Double
 
   sealed trait Tree[+T]
 
