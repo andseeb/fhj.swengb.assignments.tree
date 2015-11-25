@@ -40,7 +40,21 @@ object Graph {
     * @return
     */
   def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = {
-    ???
+
+    def recTraverse[A, B](tree: Tree[A], list: Seq[B])(convert: A => B): Seq[B] = {
+      tree match {
+        case Branch(left, right) => {
+          list ++ recTraverse(left, list)(convert) ++ recTraverse(right, list)(convert) // append all 3 lists to each other
+        }
+        case Node(v) => {
+          list :+ convert(v) // append value to list
+        }
+      }
+    }
+
+
+    recTraverse(tree, Nil)(convert)
+
   }
 
   /**
