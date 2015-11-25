@@ -83,6 +83,35 @@ object MathUtil {
   }
 
 
+  /**
+    * normalises a given degree angle to a number from 0 to 360
+    *
+    * @param angle  a double value
+    * @return
+    */
+  def normaliseDegreeAngle(angle: Double) : Double = {
+
+    def positAngle(angle: Double): Double = {
+      if (angle < 0) positAngle(angle+360)
+      else angle
+    }
+
+    def shrinkAngle(angle: Double): Double = {
+      if (angle > 360) shrinkAngle(angle-360)
+      else angle
+    }
+
+    angle match {
+      case a if a < 0 => positAngle(angle)
+      case _ => shrinkAngle(angle)
+    }
+
+
+
+
+    angle
+  }
+
 }
 
 
@@ -101,7 +130,42 @@ object L2D {
     * @return
     */
   def apply(start: Pt2D, angle: AngleInDegrees, length: Double, color: Color): L2D = {
-    ???
+    // get angle that is between 0 and 360
+
+
+
+    // add the length to the corresponding directions
+    val endPoint = normaliseDegreeAngle(angle) match {
+      case alpha if (alpha >= 0 && alpha <= 90) => {
+        //sin(angle.toRadians) = opposedCathetus / hypothenuse
+        //sin(angle.toRadians) * hypothenuse = opposedCathetus
+        //opposedCathetus = sin(angle.toRadians) * hypothenuse
+        val opposedCathetusLength = Math.sin(angle.toRadians) * length
+
+        //cos(angle.toRadians) = adjacentCathetus / hypothenuse
+        val adjacentCathetusLength = Math.cos(angle.toRadians) * length
+
+        (MathUtil.round(start.x + adjacentCathetusLength), MathUtil.round(start.y + opposedCathetusLength))
+      }
+      case alpha if (alpha > 90 && alpha <= 180) => {
+        val opposedCathetusLength = Math.sin((angle-90).toRadians) * length
+        val adjacentCathetusLength = Math.cos((angle-90).toRadians) * length
+        (MathUtil.round(start.x - opposedCathetusLength), MathUtil.round(start.y + adjacentCathetusLength))
+      }
+      case alpha if (alpha > 180 && alpha <= 270) => {
+        val opposedCathetusLength = Math.sin((angle-180).toRadians) * length
+        val adjacentCathetusLength = Math.cos((angle-180).toRadians) * length
+        (MathUtil.round(start.x - opposedCathetusLength), MathUtil.round(start.y - adjacentCathetusLength))
+      }
+      case alpha if (alpha > 270 && alpha <= 360) => {
+        val opposedCathetusLength = Math.sin((angle-270).toRadians) * length
+        val adjacentCathetusLength = Math.cos((angle-270).toRadians) * length
+        (MathUtil.round(start.x + adjacentCathetusLength), MathUtil.round(start.y - opposedCathetusLength))
+      }
+    }
+
+    // http://michalostruszka.pl/blog/2015/03/30/scala-case-classes-to-and-from-tuples/
+    L2D(start, Pt2D.tupled(endPoint), color)
   }
 
 
