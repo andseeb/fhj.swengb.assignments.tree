@@ -92,10 +92,10 @@ object Graph {
 
 
         Branch(
-          Node(L2D(curStart, angle, length, colorMap(curDepth))),
+          Node(curLink),
           Branch(
-            Node(L2D(curStart, angle, length, colorMap(curDepth)).left(factor, angle, colorMap(curDepth))),
-            Node(L2D(curStart, angle, length, colorMap(curDepth)).right(factor, angle, colorMap(curDepth))))
+            Node(curLink.left(factor, angle, colorMap(curDepth))),
+            Node(curLink.right(factor, angle, colorMap(curDepth))))
         )
 
 
