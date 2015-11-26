@@ -85,9 +85,9 @@ object Graph {
     def recMkGraph(curDepth: Int,
                    curLink: L2D,
                    curStart: Pt2D,
-                   deltaAngle :Double) : Tree[L2D] = {
-      if (treeDepth == 0) {
-        Node(L2D(curStart, angle, length, colorMap(curDepth)))
+                   deltaAngle : Double) : Tree[L2D] = {
+      if (treeDepth == 0) { // special case
+        Node(curLink)
       } else if (curDepth +1 == treeDepth) { // at the end
 
 
@@ -115,8 +115,7 @@ object Graph {
     }
 
 
-
-    recMkGraph(0, L2D(start, angle, length, colorMap(treeDepth)), start, 0)
+    recMkGraph(0, L2D(start, initialAngle, length, colorMap(0)), start, 0)
 
   }
 
