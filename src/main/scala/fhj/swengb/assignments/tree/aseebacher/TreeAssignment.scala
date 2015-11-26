@@ -78,7 +78,48 @@ object Graph {
               angle: Double = 45.0,
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
     assert(treeDepth <= colorMap.size, s"Treedepth higher than color mappings - bailing out ...")
-    ???
+    // L2D hat start,end,color
+    // L2D apply macht einen L2D aus start,angle,length,color
+
+
+    def recMkGraph(curDepth: Int,
+                   curStart: Pt2D,
+                   length: Double,
+                   treeDepth: Int,
+                   factor: Double = 0.75,
+                   angle: Double = 45.0,
+                   colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
+      if (treeDepth == 0) {
+        Node(L2D(curStart, angle, length, colorMap(curDepth)))
+      } else if (curDepth +1 == treeDepth) { // at the end
+
+
+        Branch(
+          Node(L2D(curStart, angle, length, colorMap(curDepth))),
+          Branch(
+            Node(L2D(curStart, angle, length, colorMap(curDepth)).left(factor, angle, colorMap(curDepth))),
+            Node(L2D(curStart, angle, length, colorMap(curDepth)).right(factor, angle, colorMap(curDepth))))
+        )
+
+
+      } else {
+
+        Branch(
+          Node(L2D(curStart, angle, length*factor, colorMap(curDepth))),
+          Branch(
+            recMkGraph(curDepth+1, L2D(curStart, angle, length, colorMap(curDepth)).end, length, treeDepth, factor, angle, colorMap),
+            recMkGraph(curDepth+1, L2D(curStart, angle, length, colorMap(curDepth)).end, length, treeDepth, factor, angle, colorMap)
+          )
+        )
+
+
+      }
+    }
+
+
+
+    recMkGraph(0, start, length, treeDepth, factor, initialAngle, colorMap)
+
   }
 
 }
@@ -105,25 +146,20 @@ object MathUtil {
     */
   def normaliseDegreeAngle(angle: Double) : Double = {
 
-    def positAngle(angle: Double): Double = {
-      if (angle < 0) positAngle(angle+360)
+    def increaseAngle(angle: Double): Double = {
+      if (angle < 0) increaseAngle(angle+360)
       else angle
     }
 
-    def shrinkAngle(angle: Double): Double = {
-      if (angle > 360) shrinkAngle(angle-360)
+    def decreaseAngle(angle: Double): Double = {
+      if (angle > 360) decreaseAngle(angle-360)
       else angle
     }
 
-    angle match {
-      case a if a < 0 => positAngle(angle)
-      case _ => shrinkAngle(angle)
-    }
+    if (angle < 0) increaseAngle(angle)
+    else decreaseAngle(angle)
 
 
-
-
-    angle
   }
 
 }
@@ -149,7 +185,7 @@ object L2D {
 
 
     // add the length to the corresponding directions
-    val endPoint = normaliseDegreeAngle(angle) match {
+    /*val endPoint = normaliseDegreeAngle(angle) match {
       case alpha if (alpha >= 0 && alpha <= 90) => {
         //sin(angle.toRadians) = opposedCathetus / hypothenuse
         //sin(angle.toRadians) * hypothenuse = opposedCathetus
@@ -176,7 +212,21 @@ object L2D {
         val adjacentCathetusLength = Math.cos((angle-270).toRadians) * length
         (MathUtil.round(start.x + adjacentCathetusLength), MathUtil.round(start.y - opposedCathetusLength))
       }
-    }
+    }*/
+
+    val normAngle = normaliseDegreeAngle(angle)
+
+    //sin(angle.toRadians) = opposedCathetus / hypothenuse
+    //sin(angle.toRadians) * hypothenuse = opposedCathetus
+    //opposedCathetus = sin(angle.toRadians) * hypothenuse
+    val opposedCathetusLength = Math.sin(normAngle.toRadians) * length
+
+    //cos(angle.toRadians) = adjacentCathetus / hypothenuse
+    val adjacentCathetusLength = Math.cos(normAngle.toRadians) * length
+
+    val endPoint = (MathUtil.round(start.x + adjacentCathetusLength), MathUtil.round(start.y + opposedCathetusLength))
+
+
 
     // http://michalostruszka.pl/blog/2015/03/30/scala-case-classes-to-and-from-tuples/
     L2D(start, Pt2D.tupled(endPoint), color)
